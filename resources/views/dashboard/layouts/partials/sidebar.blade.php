@@ -22,10 +22,22 @@
                     </span>
                     <h4 class="text-section">NAVIGATIONS</h4>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item {{ request()->segment(2) == 'dashboard' ? 'active' : '' }}">
                     <a href="{{ route('dashboard.index') }}">
                         <i class="fas fa-home"></i>
                         <p>Dashboard</p>
+                    </a>
+                </li>
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">KELOLA INSTANSI</h4>
+                </li>
+                <li class="nav-item {{ request()->segment(2) == 'tentang-kami' ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.tentang_kami.index') }}">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Tentang Kami</p>
                     </a>
                 </li>
             </ul>
