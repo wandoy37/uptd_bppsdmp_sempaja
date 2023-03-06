@@ -48,12 +48,16 @@
                                         <div class="form-group">
                                             <label>Judul</label>
                                             <input type="text" name="title" class="form-control"
-                                                placeholder="Title ..." value="{{ old('title', $about->title) }}">
+                                                placeholder="Title ..." value="{{ old('title', $about->title) }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Thumbnail</label>
+                                            @error('thumbnail')
+                                                <br>
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
                                             <input type="file" name="thumbnail" class="form-control"
                                                 placeholder="thumbnail ...">
                                         </div>
@@ -61,28 +65,36 @@
                                     <div class="col-md-8">
                                         <div class="form-group">
                                             <label>Content</label>
-                                            <textarea name="content" id="summernote">{!! $about->content !!}</textarea>
+                                            <textarea name="content" id="summernote" required>{!! $about->content !!}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group" style="margin-top: 50px;">
                                             <label><i>Thumbnail Old Preview</i></label>
                                             <div class="border text-center">
-                                                @if ($about->thumbnail == 'none')
-                                                    <img src="{{ asset('uploads/image/no-image.png') }}"
-                                                        class="img-fluid my-4" width="50%" alt="">
+                                                @if ($about->thumbnail == 'no-image.png')
+                                                    <img class="img-fluid my-4" width="100px"
+                                                        src="{{ asset('uploads/' . $about->thumbnail) }}" alt="">
                                                 @else
-                                                    <img src="{{ asset('uploads/image/' . $about->thumbnail) }}"
-                                                        class="img-fluid my-4" width="50%" alt="">
+                                                    <img class="img-fluid my-4" width="100px"
+                                                        src="{{ asset('uploads/image/' . $about->thumbnail) }}"
+                                                        alt="">
                                                 @endif
 
                                             </div>
                                         </div>
                                         <div class="form-group float-right">
-                                            <input type="submit" name="status" value="publish"
-                                                class="btn btn-outline-warning btn-round text-capitalize mr-2">
-                                            <input type="submit" name="status" value="draft"
-                                                class="btn btn-outline-success btn-round text-capitalize">
+                                            @if ($about->status == 'publish')
+                                                <input type="submit" name="status" value="publish"
+                                                    class="btn btn-warning btn-round text-capitalize mr-2">
+                                                <input type="submit" name="status" value="draft"
+                                                    class="btn btn-outline-success btn-round text-capitalize">
+                                            @else
+                                                <input type="submit" name="status" value="publish"
+                                                    class="btn btn-outline-warning btn-round text-capitalize mr-2">
+                                                <input type="submit" name="status" value="draft"
+                                                    class="btn btn-success btn-round text-capitalize">
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

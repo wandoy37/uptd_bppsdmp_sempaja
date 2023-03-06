@@ -47,12 +47,16 @@
                                         <div class="form-group">
                                             <label>Judul</label>
                                             <input type="text" name="title" class="form-control"
-                                                placeholder="Title ...">
+                                                placeholder="Title ..." required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label>Thumbnail</label>
+                                            @error('thumbnail')
+                                                <br>
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
                                             <input type="file" name="thumbnail" class="form-control"
                                                 placeholder="thumbnail ...">
                                         </div>
@@ -60,7 +64,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Content</label>
-                                            <textarea name="content" id="summernote"></textarea>
+                                            <textarea name="content" id="summernote" required></textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-12">

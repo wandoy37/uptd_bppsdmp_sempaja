@@ -47,10 +47,12 @@ class TentangKamiController extends Controller
             [
                 'title' => 'required',
                 'content' => 'required',
-                'thumbnail' => 'required',
+                'thumbnail' => 'mimes:png',
                 'status' => 'required'
             ],
-            [],
+            [
+                'thumbnail.mimes' => 'Thumbnail harus berupa file bertipe: png.',
+            ],
         );
 
         // If failur validate
@@ -58,35 +60,33 @@ class TentangKamiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors($validator);
         }
 
+        // If Success
         DB::beginTransaction();
         try {
             // This Process File/Image
             if ($request['thumbnail']) {
-                $image = $request['thumbnail'];
-                $imageName = Str::slug($request->title, '-') . '-' . date('Y-m-d') . '.' . $image->getClientOriginalExtension();
-
-                // Resize Image
-                $thumbnail = image::make($image->getRealPath())->resize(400, 400);
-
                 // Make Directory
-                $path = 'uploads/image';
+                $path = public_path() . '/uploads/image/';
                 if (!file_exists($path)) {
                     File::makeDirectory($path, 0775, true, true);
                 }
+                // New Thumbnail
+                $image = $request['thumbnail'];
+                $imageName = Str::slug($request->title, '-') . '-' . date('Y-m-d') . '.' . $image->getClientOriginalExtension();
+                // Resize Image
+                $thumbnail = image::make($image->getRealPath())->resize(400, 400);
                 // Save Image
-                $thumbPath = $path . '/' . $imageName;
+                $thumbPath = $path . $imageName;
                 $thumbnail = Image::make($thumbnail)->save($thumbPath);
             }
 
-            $data = [
+            TentangKami::create([
                 'title' => $request->title,
                 'slug' => Str::slug($request->title, '-') . '-' . date('Y-m-d'),
-                'thumbnail' => $imageName,
+                'thumbnail' => $imageName ?? 'no-image.png',
                 'content' => $request->content,
-                'status' => $request->status
-            ];
-
-            TentangKami::create($data);
+                'status' => $request->status,
+            ]);
             return redirect()->route('dashboard.tentang_kami.index')->with('success', $request->title . ' berhasil ditambahkan.');
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -135,9 +135,12 @@ class TentangKamiController extends Controller
             [
                 'title' => 'required',
                 'content' => 'required',
+                'thumbnail' => 'mimes:png',
                 'status' => 'required'
             ],
-            [],
+            [
+                'thumbnail.mimes' => 'Thumbnail harus berupa file bertipe: png.',
+            ],
         );
 
         // If failur validate
@@ -145,44 +148,43 @@ class TentangKamiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors($validator);
         }
 
+        // If Success
         DB::beginTransaction();
         try {
+            // Get this data
             $about = TentangKami::where('slug', $slug)->first();
 
-            // Make Directory
-            $path = 'uploads/image';
-            if (!file_exists($path)) {
-                File::makeDirectory($path, 0775, true, true);
-            }
-
-            // If Uploads Image
+            // This Process File/Image
             if ($request['thumbnail']) {
-                // Destroy Old Thumbnail
-                File::delete($path . '/' .  $about->thumbnail);
-
+                // Make Directory
+                $path = public_path() . '/uploads/image/';
+                if (!file_exists($path)) {
+                    File::makeDirectory($path, 0775, true, true);
+                }
+                // Old Thumbnail
+                $oldThumbnail = $about->thumbnail;
+                File::delete($path, $oldThumbnail);
                 // New Thumbnail
                 $image = $request['thumbnail'];
                 $imageName = Str::slug($request->title, '-') . '-' . date('Y-m-d') . '.' . $image->getClientOriginalExtension();
                 // Resize Image
                 $thumbnail = image::make($image->getRealPath())->resize(400, 400);
                 // Save Image
-                $thumbPath = $path . '/' . $imageName;
+                $thumbPath = $path . $imageName;
                 $thumbnail = Image::make($thumbnail)->save($thumbPath);
             }
 
-            $data = [
+            $about->update([
                 'title' => $request->title,
                 'slug' => Str::slug($request->title, '-') . '-' . date('Y-m-d'),
                 'thumbnail' => $imageName ?? $about->thumbnail,
                 'content' => $request->content,
-                'status' => $request->status
-            ];
-
-            $about->update($data);
-            return redirect()->route('dashboard.tentang_kami.index')->with('success', $request->title . ' berhasil update.');
+                'status' => $request->status,
+            ]);
+            return redirect()->route('dashboard.tentang_kami.index')->with('success', $request->title . ' berhasil ditambahkan.');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('dashboard.tentang_kami.index')->with('fails', $request->title . ' gagal update.');
+            return redirect()->route('dashboard.tentang_kami.index')->with('fails', $request->title . ' gagal ditambahkan.');
         } finally {
             DB::commit();
         }
@@ -199,14 +201,14 @@ class TentangKamiController extends Controller
         DB::beginTransaction();
         try {
             $about = TentangKami::where('slug', $slug)->first();
-            $path = 'uploads/image';
-            File::delete($path . '/' . $about->thumbnail);
+            $path = public_path() . '/uploads/image/';
+            File::delete($path . $about->thumbnail);
 
             $about->delete($about);
-            return redirect()->route('dashboard.tentang_kami.index')->with('success', 'participant has ben delete');
+            return redirect()->route('dashboard.tentang_kami.index')->with('success', 'Delete has ben successfuly');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('dashboard.tentang_kami.index')->with('fail', 'participant fail delete');
+            return redirect()->route('dashboard.tentang_kami.index')->with('fail', 'Delete has ben fails');
         } finally {
             DB::commit();
         }

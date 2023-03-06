@@ -53,8 +53,14 @@
                                         <tr class="text-center">
                                             <td>{{ $about->title }}</td>
                                             <td>
-                                                <img class="img-fluid" width="100px"
-                                                    src="{{ asset('uploads/image/' . $about->thumbnail) }}" alt="">
+                                                @if ($about->thumbnail == 'no-image.png')
+                                                    <img class="img-fluid" width="100px"
+                                                        src="{{ asset('uploads/' . $about->thumbnail) }}" alt="">
+                                                @else
+                                                    <img class="img-fluid" width="100px"
+                                                        src="{{ asset('uploads/image/' . $about->thumbnail) }}"
+                                                        alt="">
+                                                @endif
                                             </td>
                                             <td>
                                                 @if ($about->status == 'publish')
