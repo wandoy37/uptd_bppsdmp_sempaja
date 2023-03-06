@@ -40,6 +40,18 @@
                         <p>Tentang Kami</p>
                     </a>
                 </li>
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">KELOLA BERITA</h4>
+                </li>
+                <li class="nav-item {{ request()->segment(2) == 'berita' ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.berita.index') }}">
+                        <i class="fas fa-newspaper"></i>
+                        <p>Berita</p>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
